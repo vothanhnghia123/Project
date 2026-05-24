@@ -17,6 +17,15 @@ $pageTitle = 'Quản lý sách';
             <i class="fa-solid fa-plus"></i> Thêm sách mới
         </a>
     </div>
+    <!-- Thống kê nhanh -->
+    <?php if (!empty($sachs)): ?>
+    <div style="padding:12px 22px; border-top:1px solid #f0f0f0; font-size:13px; color:#888; display:flex; gap:20px;">
+        <span><i class="fa-solid fa-layer-group" style="color:#e74c3c;"></i> Tổng: <b style="color:#1a1f2e;"><?php echo count($sachs); ?></b> sách</span>
+        <span><i class="fa-solid fa-tags" style="color:#3498db;"></i> Thể loại: <b style="color:#1a1f2e;"><?php echo count($theloais); ?></b></span>
+        <span><i class="fa-solid fa-building-columns" style="color:#27ae60;"></i> NXB: <b style="color:#1a1f2e;"><?php echo count($nxbs); ?></b></span>
+        <span><i class="fa-solid fa-pen-nib" style="color:#9b59b6;"></i> Tác giả: <b style="color:#1a1f2e;"><?php echo count($tacgias); ?></b></span>
+    </div>
+    <?php endif; ?>
 
     <div style="overflow-x:auto;">
         <table class="admin-tbl">
@@ -93,14 +102,4 @@ $pageTitle = 'Quản lý sách';
             </tbody>
         </table>
     </div>
-
-    <!-- Thống kê nhanh -->
-    <?php if (!empty($sachs)): ?>
-    <div style="padding:12px 22px; border-top:1px solid #f0f0f0; font-size:13px; color:#888; display:flex; gap:20px;">
-        <span><i class="fa-solid fa-layer-group" style="color:#e74c3c;"></i> Tổng: <b style="color:#1a1f2e;"><?php echo count($sachs); ?></b> sách</span>
-        <span><i class="fa-solid fa-tags" style="color:#3498db;"></i> Thể loại: <b style="color:#1a1f2e;"><?php echo count($theloais); ?></b></span>
-        <span><i class="fa-solid fa-building-columns" style="color:#27ae60;"></i> NXB: <b style="color:#1a1f2e;"><?php echo count($nxbs); ?></b></span>
-        <span><i class="fa-solid fa-pen-nib" style="color:#9b59b6;"></i> Tác giả: <b style="color:#1a1f2e;"><?php echo count($tacgias); ?></b></span>
-    </div>
-    <?php endif; ?>
 </div>
