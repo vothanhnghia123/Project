@@ -1,0 +1,231 @@
+/* layout chính */
+.single-product{
+    margin-top:60px;
+}
+
+/* card tổng */
+.single-product .row{
+    background:#fff;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* ảnh sách */
+.product-img{
+    width:100%;
+    max-height:420px;
+    object-fit:contain;
+    background:#f7f7f7;
+    padding:20px;
+    border-radius:10px;
+    transition:0.3s;
+}
+
+/* hover ảnh */
+.product-img:hover{
+    transform:scale(1.05);
+}
+
+/* tên sách */
+.product-description h2{
+    font-size:28px;
+    font-weight:700;
+    margin-bottom:10px;
+}
+
+/* giá */
+.product-description h3{
+    color:#e53935;
+    font-size:26px;
+    font-weight:bold;
+}
+
+/* bảng thông tin sách */
+.product-description ul{
+    background:#fafafa;
+    border-radius:10px;
+    padding:15px 20px;
+    margin-top:20px;
+}
+
+.product-description ul li{
+    padding:6px 0;
+    font-size:16px;
+}
+
+/* tiêu đề mô tả */
+.product-description h5{
+    font-size:18px;
+    font-weight:600;
+    margin-top:30px;
+    margin-bottom:10px;
+}
+
+/* mô tả */
+.product-description p{
+    line-height:1.8;
+    color:#555;
+}
+
+/* nút giỏ hàng */
+.product-description button{
+    margin-top:25px;
+    padding:12px 35px;
+    font-size:18px;
+    border-radius:8px;
+    transition:0.3s;
+}
+
+/* hover nút */
+.product-description button:hover{
+    transform:translateY(-3px);
+    box-shadow:0 8px 18px rgba(0,0,0,0.2);
+}
+/**/
+.info-book{
+background:#f9f9f9;
+padding:18px;
+border-radius:8px;
+line-height:2;
+}
+
+.info-book li{
+border-bottom:1px solid #eee;
+padding:6px 0;
+}
+
+.info-book li:last-child{
+border:none;
+}
+/*thông báo*/
+#msg-add{
+    position: fixed;
+    top: 90px;
+    right: 20px;
+    background: #28a745;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    z-index: 9999;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    font-weight: bold;
+    display: none;
+}
+/* dánh giá */
+.review-section{
+margin-top:40px;
+}
+
+.review-item{
+line-height:1.6;
+}
+
+.review-item i{
+color:#f5a623;
+margin-right:2px;
+}
+/* from đánh giá */
+.write-review{
+margin-top:30px;
+padding:20px;
+border:1px solid #eee;
+border-radius:8px;
+background:#fafafa;
+}
+
+.rating-star{
+margin:10px 0;
+}
+
+.write-review textarea{
+width:100%;
+height:100px;
+padding:10px;
+border:1px solid #ddd;
+border-radius:6px;
+}
+/* khung tổng */
+.rating-summary{
+    display:grid;
+    grid-template-columns:180px 1fr 160px;
+    align-items:center;
+    gap:40px;
+
+    max-width:900px;
+    margin-top:20px;
+
+    background:#f5f5f5;
+    padding:30px;
+    border-radius:12px;
+    margin-left:auto;
+    margin-right:auto;
+
+
+}
+
+/* cột điểm */
+.rating-left{
+    text-align:center;
+}
+
+.rating-left h1{
+    font-size:50px;
+    margin:0;
+}
+
+.stars{
+    color:#f5a623;
+    font-size:22px;
+    margin:5px 0;
+}
+
+/* cột thanh sao */
+.rating-right{
+    width:100%;
+}
+
+.row-star{
+    display:grid;
+    grid-template-columns:60px 1fr 40px;
+    align-items:center;
+    gap:10px;
+    margin:6px 0;
+}
+
+.bar{
+    height:8px;
+    background:#ddd;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.bar div{
+    height:100%;
+    background:#f5a623;
+}
+
+/* cột nút */
+.rating-action{
+    text-align:right;
+}
+
+.btn-review{
+    background:#e53935;
+    color:white;
+    border:none;
+    padding:12px 28px;
+    border-radius:6px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.2s;
+
+    white-space:nowrap;   /* không cho chữ xuống dòng */
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+}
+
+.btn-review:hover{
+    background:#c62828;
+}
