@@ -1,67 +1,47 @@
 <?php
-/**
- * project/index.php
- * ─────────────────────────────────────────────
- * Bootstrap – Điểm khởi đầu DUY NHẤT của ứng dụng.
- * Mọi request đều đi qua đây nhờ .htaccess rewrite.
- */
-
+ob_start();
 session_start();
 
-// ── Đường dẫn & URL gốc ──────────────────────────────────────────────
-define('BASE_PATH', __DIR__);
-define('BASE_URL',  '/project');   // Thay '/project' nếu deploy ở thư mục khác
+require_once "config/db.php";
+global $connect;
+$connect = new connect();
 
-// ── Autoload Controller & Model ──────────────────────────────────────
-spl_autoload_register(function (string $class): void {
-    $paths = [
-        BASE_PATH . '/controller/' . $class . '.php',
-        BASE_PATH . '/model/'      . $class . '.php',
-    ];
-    foreach ($paths as $file) {
-        if (file_exists($file)) {
-            require_once $file;
-            return;
-        }
-    }
-});
+require_once "model/master.php";
 
-// ── Parse URL ────────────────────────────────────────────────────────
-// .htaccess đẩy URL thực vào $_GET['url']
-// VD: /project/book/detail/5  →  $_GET['url'] = 'book/detail/5'
-$rawUrl   = $_GET['url'] ?? '';
-$segments = array_values(array_filter(explode('/', trim($rawUrl, '/'))));
-
-$controllerName = isset($segments[0]) && $segments[0] !== ''
-    ? ucfirst(strtolower($segments[0]))   // 'book' → 'Book'
-    : 'Home';
-
-$actionName = isset($segments[1]) && $segments[1] !== ''
-    ? strtolower($segments[1])            // 'detail' → 'detail'
-    : 'index';
-
-$params = array_slice($segments, 2);      // ['5'] hoặc []
-
-// ── Load & Dispatch ──────────────────────────────────────────────────
-$controllerFile = BASE_PATH . '/controller/' . $controllerName . '.php';
-
-if (!file_exists($controllerFile)) {
-    http_response_code(404);
-    die("<h2 style='font-family:sans-serif'>404 – Không tìm thấy trang <code>{$controllerName}</code>.</h2>");
+// tiep nhan tham so controller va action
+if (isset($_GET["controller"], $_GET["action"])) {
+    $controller = $_GET["controller"];
+    $action     = $_GET["action"];
+} else {
+    $controller = "Home";
+    $action     = "index";
 }
 
-require_once $controllerFile;
+// tham so them (vi du: id)
+$param = $_GET["param"] ?? null;
 
-if (!class_exists($controllerName)) {
-    http_response_code(500);
-    die("<h2 style='font-family:sans-serif'>500 – Class <code>{$controllerName}</code> không hợp lệ.</h2>");
+// AJAX add cart
+if ($controller === 'Book' && $action === 'addcart') {
+    require_once "controller/Book.php";
+
+    $book = new Book();
+    $book->addcart();
+
+    exit;
 }
 
-$controller = new $controllerName();
+// Live Search AJAX
+if ($controller === 'Home' && $action === 'livesearch') {
+    require_once "controller/Home.php";
 
-if (!method_exists($controller, $actionName)) {
-    http_response_code(404);
-    die("<h2 style='font-family:sans-serif'>404 – Action <code>{$controllerName}::{$actionName}()</code> không tồn tại.</h2>");
+    $home = new Home();
+    $home->livesearch();
+
+    exit;
 }
-
-call_user_func_array([$controller, $actionName], $params);
+// chuyen tiep toi layout tuong ung
+if (strpos($controller, "Admin") !== false) {
+    require_once "view/admin/layout.php"; // layout trang admin
+} else {
+    require_once "view/layout.php"; // layout trang nguoi dung
+}

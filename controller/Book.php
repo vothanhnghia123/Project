@@ -1,82 +1,41 @@
 <?php
-/**
- * controller/Book.php
- * ─────────────────────────────────────────────────────────────
- * URL map (router dùng strtolower cho action):
- *   GET  /book                     → index()
- *   GET  /book/danhmuc/{id}        → danhmuc($id)
- *   GET  /book/theloai/{id}        → theloai($id)
- *   GET  /book/detail/{id}         → detail($id)
- *   GET  /book/cart                → cart()
- *   GET  /book/addcart?id=&so_luong= → addcart()   ← AJAX, trả số nguyên
- *   GET  /book/removecart?vi=      → removecart()
- *   GET  /book/clearcart           → clearcart()
- *   GET  /book/qty?vi=&action=     → qty()
- *   POST /book/order               → order()
- *   POST /book/review              → review()
- *
- * Biến truyền sang View:
- *   - Tất cả view dùng layout home đều nhận $categories + $viewFile
- *   - $danhmucs (flat) được layout.php tự bổ sung 'theloai' nếu cần
- *   - Để thống nhất: controller này truyền $categories (đầy đủ) thay
- *     vì $danhmucs để layout không phải query thêm DB
- */
+require_once "model/ModelBook.php";
+require_once "model/ModelNews.php";
 
-require_once BASE_PATH . '/model/Book.php';   // class BookModel
-require_once BASE_PATH . '/model/News.php';   // class News
+class Book {
+    private $bookModel;
+    private $newsModel;
+    private $perPage = 8;
 
-class Book
-{
-    private BookModel $bookModel;
-    private News      $newsModel;
-    private int       $perPage = 8;
-
-    public function __construct()
-    {
-        $this->bookModel = new BookModel();
-        $this->newsModel = new News();
+    public function __construct() {
+        $this->bookModel = new ModelBook();
+        $this->newsModel = new ModelNews();
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  DANH SÁCH TẤT CẢ SÁCH (phân trang)
-    // ──────────────────────────────────────────────────────────
-    public function index(): void
-    {
-        [$currentPage, $totalPage, $offset] = $this->paginate(
-            $this->bookModel->countBooks()
-        );
+    // ── Tất cả sách ────────────────────────────────────────────
+    public function index() {
+        $total       = $this->bookModel->countBooks();
+        list($currentPage, $totalPage, $offset) = $this->paginate($total);
 
-        $books      = $this->bookModel->getBooksPaginated($offset, $this->perPage);
-        $title      = 'Tất cả sách';
-        $filterType = null;
-        $filterId   = null;
-
-        // Sidebar cần danhmucs (flat); layout tự bổ sung theloai
-        $danhmucs   = $this->newsModel->getAllDanhmuc();
-        // Header cần categories (có theloai lồng trong)
-        $categories = $this->buildCategories($danhmucs);
-
+        $books          = $this->bookModel->getBooksPaginated($offset, $this->perPage);
+        $title          = 'Tất cả sách';
+        $filterType     = null;
+        $filterId       = null;
+        $danhmucs       = $this->newsModel->getAllDanhmuc();
+        $categories     = $this->buildCategories($danhmucs);
         $suggestedBooks = $this->bookModel->getRandomBooks(10);
 
-        $this->loadView('book/list', compact(
-            'books', 'danhmucs', 'categories', 'title',
-            'currentPage', 'totalPage', 'filterType', 'filterId',
-            'suggestedBooks'
-        ));
+        require_once "view/book/list.php";
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  LỌC THEO DANH MỤC
-    // ──────────────────────────────────────────────────────────
-    public function danhmuc(string $id = '0'): void
-    {
-        $idDanhmuc = max(1, (int)$id);
-        $dmInfo    = $this->newsModel->getDanhmucById($idDanhmuc);
-        $title     = $dmInfo ? $dmInfo['TenDanhMuc'] : 'Danh mục';
+    // ── Lọc theo danh mục ──────────────────────────────────────
+    public function danhmuc() {
+        $idDanhmuc  = max(1, (int)($_GET['param'] ?? 0));
+        $dmInfo     = $this->newsModel->getDanhmucById($idDanhmuc);
+        $title      = $dmInfo ? $dmInfo['TenDanhMuc'] : 'Danh mục';
 
-        [$currentPage, $totalPage, $offset] = $this->paginate(
-            $this->bookModel->countBooks($idDanhmuc, null)
-        );
+        $total      = $this->bookModel->countBooks($idDanhmuc, null);
+        list($currentPage, $totalPage, $offset) = $this->paginate($total);
 
         $books          = $this->bookModel->getBooksPaginated($offset, $this->perPage, $idDanhmuc, null);
         $danhmucs       = $this->newsModel->getAllDanhmuc();
@@ -85,25 +44,17 @@ class Book
         $filterId       = $idDanhmuc;
         $suggestedBooks = $this->bookModel->getRandomBooks(10);
 
-        $this->loadView('book/list', compact(
-            'books', 'danhmucs', 'categories', 'title',
-            'currentPage', 'totalPage', 'filterType', 'filterId',
-            'suggestedBooks'
-        ));
+        require_once "view/book/list.php";
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  LỌC THEO THỂ LOẠI
-    // ──────────────────────────────────────────────────────────
-    public function theloai(string $id = '0'): void
-    {
-        $idTheloai = max(1, (int)$id);
+    // ── Lọc theo thể loại ──────────────────────────────────────
+    public function theloai() {
+        $idTheloai = max(1, (int)($_GET['param'] ?? 0));
         $tlInfo    = $this->newsModel->getTheloaiById($idTheloai);
         $title     = $tlInfo ? $tlInfo['TenTheLoai'] : 'Thể loại';
 
-        [$currentPage, $totalPage, $offset] = $this->paginate(
-            $this->bookModel->countBooks(null, $idTheloai)
-        );
+        $total     = $this->bookModel->countBooks(null, $idTheloai);
+        list($currentPage, $totalPage, $offset) = $this->paginate($total);
 
         $books          = $this->bookModel->getBooksPaginated($offset, $this->perPage, null, $idTheloai);
         $danhmucs       = $this->newsModel->getAllDanhmuc();
@@ -112,24 +63,16 @@ class Book
         $filterId       = $idTheloai;
         $suggestedBooks = $this->bookModel->getRandomBooks(10);
 
-        $this->loadView('book/list', compact(
-            'books', 'danhmucs', 'categories', 'title',
-            'currentPage', 'totalPage', 'filterType', 'filterId',
-            'suggestedBooks'
-        ));
+        require_once "view/book/list.php";
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  CHI TIẾT SÁCH
-    // ──────────────────────────────────────────────────────────
-    public function detail(string $id = '0'): void
-    {
-        $idSach = max(1, (int)$id);
+    // ── Chi tiết sách ──────────────────────────────────────────
+    public function detail() {
+        $idSach = max(1, (int)($_GET['param'] ?? 0));
         $book   = $this->bookModel->getBookDetail($idSach);
 
         if (!$book) {
-            http_response_code(404);
-            die('<h2 style="font-family:sans-serif">404 – Không tìm thấy sách.</h2>');
+            die('<h2>404 – Không tìm thấy sách.</h2>');
         }
 
         $rating   = $this->bookModel->getRatingSummary($idSach);
@@ -137,25 +80,19 @@ class Book
         $danhmucs = $this->newsModel->getAllDanhmuc();
         $categories = $this->buildCategories($danhmucs);
 
-        // Phần trăm từng mức sao
         $tong = (int)($rating['tong'] ?? 0);
         $pt   = [];
         for ($s = 1; $s <= 5; $s++) {
             $pt[$s] = $tong > 0 ? round(($rating["sao{$s}"] ?? 0) / $tong * 100) : 0;
         }
 
-        $this->loadView('book/detail', compact(
-            'book', 'rating', 'reviews', 'danhmucs', 'categories', 'pt', 'tong'
-        ));
+        require_once "view/book/detail.php";
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  GIỎ HÀNG
-    // ──────────────────────────────────────────────────────────
-    public function cart(): void
-    {
-        $ids        = $_SESSION['id_them_vao_gio']  ?? [];
-        $quantities = $_SESSION['sl_them_vao_gio']  ?? [];
+    // ── Giỏ hàng ───────────────────────────────────────────────
+    public function cart() {
+        $ids        = $_SESSION['id_them_vao_gio'] ?? [];
+        $quantities = $_SESSION['sl_them_vao_gio'] ?? [];
         $books      = $this->bookModel->getBooksByIds($ids);
         $danhmucs   = $this->newsModel->getAllDanhmuc();
         $categories = $this->buildCategories($danhmucs);
@@ -178,7 +115,6 @@ class Book
             ];
         }
 
-        // Thiếu SĐT / địa chỉ → hiện thêm form nhập trong trang giỏ
         $thieuThongTin = false;
         if (isset($_SESSION['IDNguoiDung'])) {
             $user = $this->newsModel->getUserById((int)$_SESSION['IDNguoiDung']);
@@ -187,18 +123,11 @@ class Book
             }
         }
 
-        $this->loadView('book/cart', compact(
-            'cartItems', 'tongCong', 'thieuThongTin', 'danhmucs', 'categories'
-        ));
+        require_once "view/book/cart.php";
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  AJAX THÊM VÀO GIỎ
-    //  URL: GET /book/addcart?id={IDSach}&so_luong={n}
-    //  Trả về: số nguyên (tổng số lượng trong giỏ)
-    // ──────────────────────────────────────────────────────────
-    public function addcart(): void
-    {
+    // ── AJAX thêm vào giỏ ─────────────────────────────────────
+    public function addcart() {
         $id = (int)($_GET['id']       ?? 0);
         $sl = (int)($_GET['so_luong'] ?? 1);
 
@@ -209,7 +138,6 @@ class Book
             $_SESSION['sl_them_vao_gio'] = [];
         }
 
-        // Nếu đã có sách này → cộng thêm số lượng
         $found = false;
         foreach ($_SESSION['id_them_vao_gio'] as $i => $existing) {
             if ((int)$existing === $id) {
@@ -223,44 +151,34 @@ class Book
             $_SESSION['sl_them_vao_gio'][] = $sl;
         }
 
-        // Trả về tổng số lượng (cập nhật badge giỏ hàng)
         echo array_sum($_SESSION['sl_them_vao_gio']);
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  XÓA 1 SẢN PHẨM  →  GET /book/removecart?vi={index}
-    // ──────────────────────────────────────────────────────────
-    public function removecart(): void
-    {
+    // ── Xóa 1 sản phẩm ─────────────────────────────────────────
+    public function removecart() {
         $vitri = (int)($_GET['vi'] ?? -1);
         if (isset($_SESSION['id_them_vao_gio'][$vitri])) {
             array_splice($_SESSION['id_them_vao_gio'], $vitri, 1);
             array_splice($_SESSION['sl_them_vao_gio'], $vitri, 1);
         }
-        header('Location: ' . BASE_URL . '/book/cart');
+        header('Location: index.php?controller=Book&action=cart');
         exit();
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  XÓA TOÀN BỘ GIỎ  →  GET /book/clearcart
-    // ──────────────────────────────────────────────────────────
-    public function clearcart(): void
-    {
+    // ── Xóa toàn bộ giỏ ────────────────────────────────────────
+    public function clearcart() {
         unset($_SESSION['id_them_vao_gio'], $_SESSION['sl_them_vao_gio']);
-        header('Location: ' . BASE_URL . '/book/cart');
+        header('Location: index.php?controller=Book&action=cart');
         exit();
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  TĂNG / GIẢM SỐ LƯỢNG  →  GET /book/qty?vi=&action=tang|giam
-    // ──────────────────────────────────────────────────────────
-    public function qty(): void
-    {
-        $vitri  = (int)($_GET['vi']     ?? -1);
-        $action = trim($_GET['action']  ?? '');
+    // ── Tăng/giảm số lượng ─────────────────────────────────────
+    public function qty() {
+        $vitri  = (int)($_GET['vi'] ?? -1);
+        $action = trim($_GET['do']  ?? '');
 
         if (!isset($_SESSION['sl_them_vao_gio'][$vitri])) {
-            header('Location: ' . BASE_URL . '/book/cart');
+            header('Location: index.php?controller=Book&action=cart');
             exit();
         }
 
@@ -274,27 +192,24 @@ class Book
             }
         }
 
-        header('Location: ' . BASE_URL . '/book/cart');
+        header('Location: index.php?controller=Book&action=cart');
         exit();
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  ĐẶT HÀNG  →  POST /book/order
-    // ──────────────────────────────────────────────────────────
-    public function order(): void
-    {
+    // ── Đặt hàng ───────────────────────────────────────────────
+    public function order() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: ' . BASE_URL . '/book/cart');
+            header('Location: index.php?controller=Book&action=cart');
             exit();
         }
 
         if (!isset($_SESSION['IDNguoiDung'])) {
-            header('Location: ' . BASE_URL . '/home/login');
+            header('Location: index.php?controller=User&action=login');
             exit();
         }
 
         if (empty($_SESSION['id_them_vao_gio'])) {
-            header('Location: ' . BASE_URL . '/book/cart');
+            header('Location: index.php?controller=Book&action=cart');
             exit();
         }
 
@@ -302,7 +217,6 @@ class Book
         $phuongThucTT = in_array($_POST['thanhtoan'] ?? '', ['COD', 'ATM'])
                         ? $_POST['thanhtoan'] : 'COD';
 
-        // Lưu SĐT / địa chỉ nếu user vừa nhập trong form giỏ hàng
         if (!empty($_POST['sdt']) || !empty($_POST['diachi'])) {
             $user = $this->newsModel->getUserById($idNguoiDung);
             $this->newsModel->updateUserInfo(
@@ -323,25 +237,22 @@ class Book
 
         if ($result !== false) {
             unset($_SESSION['id_them_vao_gio'], $_SESSION['sl_them_vao_gio']);
-            header('Location: ' . BASE_URL . '/book/cart?success=1');
+            header('Location: index.php?controller=Book&action=cart&success=1');
         } else {
-            header('Location: ' . BASE_URL . '/book/cart?error=1');
+            header('Location: index.php?controller=Book&action=cart&error=1');
         }
         exit();
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  GỬI ĐÁNH GIÁ  →  POST /book/review
-    // ──────────────────────────────────────────────────────────
-    public function review(): void
-    {
+    // ── Gửi đánh giá ───────────────────────────────────────────
+    public function review() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: ' . BASE_URL . '/');
+            header('Location: index.php');
             exit();
         }
 
         if (!isset($_SESSION['IDNguoiDung'])) {
-            header('Location: ' . BASE_URL . '/home/login');
+            header('Location: index.php?controller=User&action=login');
             exit();
         }
 
@@ -354,51 +265,24 @@ class Book
             $this->bookModel->saveReview($idSach, $idNguoiDung, $soSao, $noiDung);
         }
 
-        header('Location: ' . BASE_URL . '/book/detail/' . $idSach);
+        header('Location: index.php?controller=Book&action=detail&param=' . $idSach);
         exit();
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  Helper: tính phân trang
-    //  Trả về [$currentPage, $totalPage, $offset]
-    // ──────────────────────────────────────────────────────────
-    private function paginate(int $total): array
-    {
+    // ── Helpers ────────────────────────────────────────────────
+    private function paginate($total) {
         $totalPage   = max(1, (int)ceil($total / $this->perPage));
         $currentPage = max(1, min($totalPage, (int)($_GET['page'] ?? 1)));
         $offset      = ($currentPage - 1) * $this->perPage;
         return [$currentPage, $totalPage, $offset];
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  Helper: build $categories cho mega-menu (có theloai lồng)
-    //  Nhận $danhmucs (flat) từ nơi đã query để tránh query lại
-    // ──────────────────────────────────────────────────────────
-    private function buildCategories(array $danhmucs): array
-    {
+    private function buildCategories($danhmucs) {
         $list = [];
         foreach ($danhmucs as $dm) {
-            $dm['theloai'] = $this->newsModel->getTheloaiByDanhmuc(
-                (int)$dm['IDDanhMuc']
-            );
+            $dm['theloai'] = $this->newsModel->getTheloaiByDanhmuc((int)$dm['IDDanhMuc']);
             $list[] = $dm;
         }
         return $list;
-    }
-
-    // ──────────────────────────────────────────────────────────
-    //  Helper: load view qua home layout
-    //  $data phải chứa $categories (đã có theloai lồng trong)
-    // ──────────────────────────────────────────────────────────
-    private function loadView(string $view, array $data = []): void
-    {
-        extract($data);
-        $viewFile   = BASE_PATH . '/view/' . $view . '.php';
-        $layoutFile = BASE_PATH . '/view/home/layout.php';
-
-        if (!file_exists($viewFile)) {
-            die("<h2 style='font-family:sans-serif'>View không tồn tại: <code>{$view}.php</code></h2>");
-        }
-        require $layoutFile;
     }
 }

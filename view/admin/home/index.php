@@ -1,18 +1,11 @@
 <?php
-// ============================================================
-//  View\Admin\Home\Index — Dashboard tổng quan
-//  Biến: $doanhThuHomNay, $doanhThuThang, $soDonCho,
-//        $tongSach, $tongKhach, $tongDon,
-//        $donMoiNhat (array), $doanhThu7Ngay (array)
-// ============================================================
 $pageTitle = 'Dashboard';
 
-// Chuẩn bị dữ liệu biểu đồ 7 ngày
+// Chuan bi du lieu bieu do 7 ngay
 $labels = [];
 $values = [];
-// Tạo mảng đủ 7 ngày (kể cả ngày không có đơn)
 for ($i = 6; $i >= 0; $i--) {
-    $date = date('Y-m-d', strtotime("-{$i} days"));
+    $date     = date('Y-m-d', strtotime("-{$i} days"));
     $labels[] = date('d/m', strtotime($date));
     $values[$date] = 0;
 }
@@ -22,7 +15,7 @@ foreach ($doanhThu7Ngay as $row) {
 $chartData = array_values($values);
 ?>
 
-<!-- ══════ STAT CARDS ══════ -->
+<!-- STAT CARDS -->
 <div class="stat-grid">
     <div class="stat-card">
         <div class="stat-icon red"><i class="fa-solid fa-coins"></i></div>
@@ -68,11 +61,11 @@ $chartData = array_values($values);
     </div>
 </div>
 
-<!-- ══════ GRID: Biểu đồ + Đơn mới nhất ══════ -->
+<!-- GRID: Bieu do + Don moi nhat -->
 <div style="display:grid; grid-template-columns:1.6fr 1fr; gap:20px; align-items:start;">
 
-    <!-- Biểu đồ doanh thu 7 ngày -->
-    <div class="admin-table-wrap" style="padding: 22px;">
+    <!-- Bieu do doanh thu 7 ngay -->
+    <div class="admin-table-wrap" style="padding:22px;">
         <h3 style="font-size:15px; font-weight:700; margin-bottom:16px; color:#1a1f2e;">
             <i class="fa-solid fa-chart-bar" style="color:#e74c3c; margin-right:6px;"></i>
             Doanh thu 7 ngày qua
@@ -80,11 +73,12 @@ $chartData = array_values($values);
         <canvas id="revenueChart" height="120"></canvas>
     </div>
 
-    <!-- Đơn hàng mới nhất -->
+    <!-- Don hang moi nhat -->
     <div class="admin-table-wrap">
         <div class="admin-table-header">
             <h3>Đơn hàng mới nhất</h3>
-            <a href="<?php echo BASE_URL; ?>/admin/donhang" style="font-size:13px; color:#e74c3c;">Xem tất cả →</a>
+            <a href="index.php?controller=AdminDonhang&action=index"
+               style="font-size:13px; color:#e74c3c;">Xem tất cả →</a>
         </div>
         <table class="admin-tbl">
             <thead>

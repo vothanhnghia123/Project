@@ -1,8 +1,4 @@
 <?php
-// ============================================================
-//  View\Admin\Nguoidung\Index — Quản lý người dùng
-//  Biến: $users (array)
-// ============================================================
 $pageTitle = 'Quản lý người dùng';
 $myId = (int)($_SESSION['IDNguoiDung'] ?? 0);
 ?>
@@ -38,7 +34,6 @@ $myId = (int)($_SESSION['IDNguoiDung'] ?? 0);
                 <?php if (empty($users)): ?>
                     <tr>
                         <td colspan="7" style="text-align:center; padding:30px; color:#aaa;">
-                            <i class="fa-solid fa-users" style="font-size:28px; display:block; margin-bottom:8px;"></i>
                             Chưa có người dùng nào.
                         </td>
                     </tr>
@@ -107,9 +102,9 @@ $myId = (int)($_SESSION['IDNguoiDung'] ?? 0);
 <script>
 function capQuyen(id) {
     if (!confirm('Cấp quyền Admin cho người dùng #' + id + '?')) return;
-    fetch('<?php echo BASE_URL; ?>/admin/capquyen/' + id)
+    fetch('index.php?controller=AdminNguoidung&action=capquyen&param=' + id)
         .then(r => r.text())
-        .then(data => {
+        .then(() => {
             document.getElementById('role-' + id).innerHTML =
                 '<span style="background:#fee2e2;color:#991b1b;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;"><i class="fa-solid fa-shield-halved"></i> Admin</span>';
             document.getElementById('action-' + id).innerHTML =
@@ -119,7 +114,7 @@ function capQuyen(id) {
 
 function haQuyen(id) {
     if (!confirm('Hạ quyền người dùng #' + id + ' về User?')) return;
-    fetch('<?php echo BASE_URL; ?>/admin/haquyen/' + id)
+    fetch('index.php?controller=AdminNguoidung&action=haquyen&param=' + id)
         .then(r => r.text())
         .then(data => {
             if (data.trim() === 'self') { alert('Không thể hạ quyền tài khoản của chính mình!'); return; }
@@ -133,8 +128,7 @@ function haQuyen(id) {
 function searchUser() {
     const q = document.getElementById('search-nd').value.toLowerCase();
     document.querySelectorAll('#nd-table tbody tr').forEach(tr => {
-        const text = tr.textContent.toLowerCase();
-        tr.style.display = text.includes(q) ? '' : 'none';
+        tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
     });
 }
 </script>

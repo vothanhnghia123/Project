@@ -1,42 +1,34 @@
 <?php
-/**
- * config/db.php
- * Kết nối CSDL bằng PDO – Singleton Pattern
- * CSDL gốc: bansach (giữ nguyên tên từ dự án cũ)
- */
-class Database
-{
-    private static ?PDO $instance = null;
+class connect {
+    public $db = null;
 
-    private static string $host    = 'localhost';
-    private static string $dbname  = 'bansach';
-    private static string $user    = 'root';
-    private static string $pass    = '';
-    private static string $charset = 'utf8mb4';
-
-    private function __construct() {}
-    private function __clone() {}
-
-    public static function getInstance(): PDO
+    public function __construct()
     {
-        if (self::$instance === null) {
-            $dsn = sprintf(
-                'mysql:host=%s;dbname=%s;charset=%s',
-                self::$host,
-                self::$dbname,
-                self::$charset
-            );
-            try {
-                self::$instance = new PDO($dsn, self::$user, self::$pass, [
-                    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::ATTR_EMULATE_PREPARES   => false,
-                ]);
-            } catch (PDOException $e) {
-                error_log('[DB Error] ' . $e->getMessage());
-                die('<h2 style="font-family:sans-serif;color:red;">Không thể kết nối cơ sở dữ liệu.</h2>');
-            }
-        }
-        return self::$instance;
+        $this->db = new PDO("mysql:host=localhost;dbname=bansach", "root", "", [
+            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES UTF8"
+        ]);
+    }
+
+    // cac phuong thuc select
+    // select many: truy van nhieu dong
+    public function getList($sql) {
+        return $this->db->query($sql);
+    }
+
+    // select one: truy van mot dong
+    public function getInstance($sql) {
+        return $this->db->query($sql)->fetch();
+    }
+
+    // cac phuong thuc insert, update, delete
+    public function exec($sql) {
+        return $this->db->exec($sql);
+    }
+
+    // truy van co tham so (de phong SQL injection)
+    public function query($sql, $params = []) {
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt;
     }
 }

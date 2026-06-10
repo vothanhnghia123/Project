@@ -1,15 +1,6 @@
-<?php
-// ============================================================
-//  View\Book\Cart — Trang giỏ hàng + đặt hàng
-//  Biến có sẵn:
-//    $cartItems      — array [{vitri, IDSach, TenSach, HinhAnh, GiaBan, SoLuong, ThanhTien}]
-//    $tongCong       — tổng tiền toàn bộ giỏ
-//    $thieuThongTin  — bool: user chưa có SĐT / địa chỉ
-// ============================================================
-$pageTitle = 'Giỏ hàng';
-?>
+<?php $pageTitle = 'Giỏ hàng'; ?>
 
-<!-- Thông báo đặt hàng thành công -->
+<!-- Thong bao dat hang thanh cong -->
 <?php if (isset($_GET['success'])): ?>
 <div id="success-box" style="
   position:fixed; top:100px; right:30px; z-index:9999;
@@ -34,14 +25,12 @@ $pageTitle = 'Giỏ hàng';
 
 <div class="cart-container" style="display:flex; gap:24px; max-width:1200px; margin:40px auto; padding:0 16px; flex-wrap:wrap;">
 
-  <!-- ══════════════════════════════════
-       CỘT TRÁI — Danh sách sản phẩm
-  ══════════════════════════════════ -->
+  <!-- COT TRAI: Danh sach san pham -->
   <div class="cart-left" style="flex:1; min-width:300px;">
 
     <div class="cart-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
       <h2 style="margin:0; font-size:22px; font-weight:700;">GIỎ HÀNG CỦA BẠN</h2>
-      <a href="<?php echo BASE_URL; ?>/book/clearcart"
+      <a href="index.php?controller=Book&action=clearcart"
          class="btn-delete-all"
          style="color:#e74c3c; font-size:14px; text-decoration:none;"
          onclick="return confirm('Xóa toàn bộ giỏ hàng?')">
@@ -49,7 +38,6 @@ $pageTitle = 'Giỏ hàng';
       </a>
     </div>
 
-    <!-- Check-all -->
     <div style="margin-bottom:12px;">
       <input type="checkbox" id="check-all" checked>
       <label for="check-all" style="cursor:pointer; user-select:none;">Chọn tất cả</label>
@@ -67,47 +55,47 @@ $pageTitle = 'Giỏ hàng';
 
         <input type="checkbox"
                class="check-item"
-               data-price="<?php echo (int)$item['ThanhTien']; ?>"
+               data-price="<?= (int)$item['ThanhTien'] ?>"
                checked>
 
-        <img src="<?php echo BASE_URL; ?>/public/images/sach/<?php echo htmlspecialchars($item['HinhAnh']); ?>"
-             alt="<?php echo htmlspecialchars($item['TenSach']); ?>"
+        <img src="public/images/sach/<?= htmlspecialchars($item['HinhAnh']) ?>"
+             alt="<?= htmlspecialchars($item['TenSach']) ?>"
              class="cart-img"
              style="width:68px; height:90px; object-fit:cover; border-radius:4px; border:1px solid #eee;">
 
         <div class="cart-info" style="flex:1;">
           <h4 class="book-name" style="font-size:15px; margin:0 0 6px;">
-            <?php echo htmlspecialchars($item['TenSach']); ?>
+            <?= htmlspecialchars($item['TenSach']) ?>
           </h4>
           <p class="cart-price" style="color:#e74c3c; font-weight:600; margin:0;">
-            <?php echo number_format($item['GiaBan'], 0, ',', '.'); ?> đ
+            <?= number_format($item['GiaBan'], 0, ',', '.') ?> đ
           </p>
         </div>
 
-        <!-- Nút tăng / giảm -->
+        <!-- Nut tang / giam -->
         <div class="cart-qty" style="display:flex; align-items:center; gap:6px;">
-          <a href="<?php echo BASE_URL; ?>/book/qty?vi=<?php echo $item['vitri']; ?>&action=giam"
+          <a href="index.php?controller=Book&action=qty&vi=<?= $item['vitri'] ?>&do=giam"
              class="btn-qty"
              style="display:inline-block; width:28px; height:28px; line-height:26px; text-align:center; border:1px solid #ccc; border-radius:4px; text-decoration:none; color:#333; font-weight:700;">
             −
           </a>
           <span class="qty" style="min-width:24px; text-align:center; font-weight:600;">
-            <?php echo $item['SoLuong']; ?>
+            <?= $item['SoLuong'] ?>
           </span>
-          <a href="<?php echo BASE_URL; ?>/book/qty?vi=<?php echo $item['vitri']; ?>&action=tang"
+          <a href="index.php?controller=Book&action=qty&vi=<?= $item['vitri'] ?>&do=tang"
              class="btn-qty"
              style="display:inline-block; width:28px; height:28px; line-height:26px; text-align:center; border:1px solid #ccc; border-radius:4px; text-decoration:none; color:#333; font-weight:700;">
             +
           </a>
         </div>
 
-        <!-- Thành tiền -->
+        <!-- Thanh tien -->
         <div class="cart-total" style="min-width:100px; text-align:right; font-weight:700; color:#333;">
-          <?php echo number_format($item['ThanhTien'], 0, ',', '.'); ?> đ
+          <?= number_format($item['ThanhTien'], 0, ',', '.') ?> đ
         </div>
 
-        <!-- Nút xóa -->
-        <a href="<?php echo BASE_URL; ?>/book/removecart?vi=<?php echo $item['vitri']; ?>"
+        <!-- Nut xoa -->
+        <a href="index.php?controller=Book&action=removecart&vi=<?= $item['vitri'] ?>"
            class="btn-delete"
            style="color:#e74c3c; text-decoration:none; font-size:13px; white-space:nowrap;"
            onclick="return confirm('Xóa sản phẩm này?')">
@@ -118,21 +106,17 @@ $pageTitle = 'Giỏ hàng';
       <?php endforeach; ?>
     <?php endif; ?>
 
-  </div>
-  <!-- /.cart-left -->
+  </div><!-- /.cart-left -->
 
-  <!-- ══════════════════════════════════
-       CỘT PHẢI — Form đặt hàng
-  ══════════════════════════════════ -->
+  <!-- COT PHAI: Form dat hang -->
   <div class="cart-right" style="width:320px; background:#fff; border:1px solid #eee; border-radius:10px; padding:24px; align-self:flex-start;">
 
     <h3 style="margin-top:0; color:#333; border-bottom:1px solid #ddd; padding-bottom:12px; font-size:18px; font-weight:700;">
       ĐẶT HÀNG
     </h3>
 
-    <form action="<?php echo BASE_URL; ?>/book/order" method="POST">
+    <form action="index.php?controller=Book&action=order" method="POST">
 
-      <!-- Phương thức thanh toán -->
       <label style="font-weight:600; display:block; margin-bottom:6px;">
         Phương thức thanh toán
       </label>
@@ -141,7 +125,6 @@ $pageTitle = 'Giỏ hàng';
         <option value="ATM">Chuyển khoản ngân hàng</option>
       </select>
 
-      <!-- Cảnh báo / nhập thiếu thông tin giao hàng -->
       <?php if ($thieuThongTin): ?>
       <div style="color:#e74c3c; margin-bottom:10px; font-size:13px;">
         ⚠ Bạn chưa nhập thông tin nhận hàng.
@@ -156,11 +139,10 @@ $pageTitle = 'Giỏ hàng';
              style="width:100%; padding:8px; margin-bottom:14px; border:1px solid #ddd; border-radius:6px;">
       <?php endif; ?>
 
-      <!-- Tổng thanh toán -->
       <div class="checkout-total" style="display:flex; justify-content:space-between; font-size:16px; font-weight:700; margin-bottom:18px; padding:12px 0; border-top:1px solid #eee; border-bottom:1px solid #eee;">
         <span>Tổng thanh toán</span>
         <span id="tong-tien" style="color:#e74c3c;">
-          <?php echo number_format($tongCong, 0, ',', '.'); ?> VNĐ
+          <?= number_format($tongCong, 0, ',', '.') ?> VNĐ
         </span>
       </div>
 
@@ -174,19 +156,17 @@ $pageTitle = 'Giỏ hàng';
     </form>
 
     <div style="margin-top:14px; text-align:center;">
-      <a href="<?php echo BASE_URL; ?>/book"
+      <a href="index.php?controller=Book&action=index"
          style="color:#888; font-size:13px; text-decoration:none;">
         ← Tiếp tục mua sắm
       </a>
     </div>
 
-  </div>
-  <!-- /.cart-right -->
+  </div><!-- /.cart-right -->
 
 </div>
 
 <script>
-// Tính lại tổng khi tick/untick checkbox
 function tinhTien() {
     let tong = 0;
     document.querySelectorAll('.check-item:checked').forEach(cb => {
@@ -210,11 +190,10 @@ if (checkAll) {
 
 document.addEventListener('DOMContentLoaded', tinhTien);
 
-// Kiểm tra đăng nhập trước khi đặt hàng
 function checkLogin() {
     <?php if (!isset($_SESSION['IDNguoiDung'])): ?>
         alert('⚠ Vui lòng đăng nhập để đặt hàng!');
-        window.location.href = '<?php echo BASE_URL; ?>/auth/login';
+        window.location.href = 'index.php?controller=User&action=login';
         return false;
     <?php endif; ?>
     return true;

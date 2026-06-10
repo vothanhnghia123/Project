@@ -1,10 +1,4 @@
-<?php
-// ============================================================
-//  View\Admin\Tacgia\Index — Quản lý tác giả
-//  Biến: $tacgias (array), $editItem (array|null), $msg
-// ============================================================
-$pageTitle = 'Quản lý tác giả';
-?>
+<?php $pageTitle = 'Quản lý tác giả'; ?>
 
 <?php if (!empty($msg)): ?>
     <div class="alert-success"><i class="fa-solid fa-circle-check"></i> <?php echo htmlspecialchars($msg); ?></div>
@@ -12,7 +6,7 @@ $pageTitle = 'Quản lý tác giả';
 
 <div style="display:grid; grid-template-columns:1fr 400px; gap:24px; align-items:start;">
 
-    <!-- ════ BẢNG DANH SÁCH ════ -->
+    <!-- BANG DANH SACH -->
     <div class="admin-table-wrap">
         <div class="admin-table-header">
             <h3><i class="fa-solid fa-pen-nib" style="color:#e74c3c;margin-right:6px;"></i> Danh sách tác giả</h3>
@@ -32,7 +26,6 @@ $pageTitle = 'Quản lý tác giả';
                 <?php if (empty($tacgias)): ?>
                     <tr>
                         <td colspan="4" style="text-align:center; padding:30px; color:#aaa;">
-                            <i class="fa-solid fa-pen-nib" style="font-size:28px; display:block; margin-bottom:8px;"></i>
                             Chưa có tác giả nào.
                         </td>
                     </tr>
@@ -51,13 +44,15 @@ $pageTitle = 'Quản lý tác giả';
                         <td style="font-size:13px; color:#666; max-width:260px;">
                             <?php
                             $ts = htmlspecialchars($tg['TieuSu'] ?? '');
-                            echo strlen($ts) > 80 ? mb_substr($ts, 0, 80) . '...' : ($ts ?: '<em style="color:#ccc;">Chưa có tiểu sử</em>');
+                            echo strlen($ts) > 80
+                                ? mb_substr($ts, 0, 80) . '...'
+                                : ($ts ?: '<em style="color:#ccc;">Chưa có tiểu sử</em>');
                             ?>
                         </td>
                         <td style="text-align:center; white-space:nowrap;">
-                            <a href="<?php echo BASE_URL; ?>/admin/tacgia?edit=<?php echo (int)$tg['IDTacGia']; ?>"
+                            <a href="index.php?controller=AdminTacgia&action=index&edit=<?php echo (int)$tg['IDTacGia']; ?>"
                                class="btn-edit"><i class="fa-solid fa-pen-to-square"></i> Sửa</a>
-                            <a href="<?php echo BASE_URL; ?>/admin/deletetacgia/<?php echo (int)$tg['IDTacGia']; ?>"
+                            <a href="index.php?controller=AdminTacgia&action=delete&param=<?php echo (int)$tg['IDTacGia']; ?>"
                                class="btn-delete"
                                onclick="return confirm('Xóa tác giả này?')">
                                 <i class="fa-solid fa-trash"></i> Xóa
@@ -70,12 +65,13 @@ $pageTitle = 'Quản lý tác giả';
         </table>
     </div>
 
-    <!-- ════ FORM THÊM / SỬA ════ -->
+    <!-- FORM THEM / SUA -->
     <div class="admin-form-wrap" style="margin-bottom:0;">
 
         <?php if ($editItem): ?>
             <h3><i class="fa-solid fa-pen-to-square" style="color:#3498db; margin-right:8px;"></i> Sửa tác giả</h3>
-            <form method="POST" action="<?php echo BASE_URL; ?>/admin/updatetacgia/<?php echo (int)$editItem['IDTacGia']; ?>">
+            <form method="POST" action="index.php?controller=AdminTacgia&action=update">
+                <input type="hidden" name="id" value="<?php echo (int)$editItem['IDTacGia']; ?>">
                 <div class="form-row">
                     <label>Tên tác giả <span style="color:#e74c3c;">*</span></label>
                     <input type="text" name="tentacgia" required
@@ -90,7 +86,7 @@ $pageTitle = 'Quản lý tác giả';
                     <button type="submit" class="btn-submit" style="padding:9px 22px;">
                         <i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi
                     </button>
-                    <a href="<?php echo BASE_URL; ?>/admin/tacgia" class="btn-cancel">
+                    <a href="index.php?controller=AdminTacgia&action=index" class="btn-cancel">
                         <i class="fa-solid fa-xmark"></i> Hủy
                     </a>
                 </div>
@@ -99,7 +95,7 @@ $pageTitle = 'Quản lý tác giả';
         <?php endif; ?>
 
         <h3><i class="fa-solid fa-plus-circle" style="color:#e74c3c; margin-right:8px;"></i> Thêm tác giả mới</h3>
-        <form method="POST" action="<?php echo BASE_URL; ?>/admin/storetacgia">
+        <form method="POST" action="index.php?controller=AdminTacgia&action=store">
             <div class="form-row">
                 <label>Tên tác giả <span style="color:#e74c3c;">*</span></label>
                 <input type="text" name="tentacgia" required placeholder="VD: Nguyễn Nhật Ánh...">

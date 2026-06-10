@@ -1,9 +1,1 @@
 Options -Indexes
-RewriteEngine On
-
-# Cho phép truy cập trực tiếp đến file/thư mục thực (CSS, JS, ảnh...)
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-
-# Tất cả request còn lại → dồn về index.php
-RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]

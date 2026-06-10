@@ -1,10 +1,4 @@
-<?php
-// ============================================================
-//  View\Admin\Book\Index — Danh sách sách
-//  Biến: $sachs (array), $theloais, $nxbs, $tacgias, $msg (string)
-// ============================================================
-$pageTitle = 'Quản lý sách';
-?>
+<?php $pageTitle = 'Quản lý sách'; ?>
 
 <?php if (!empty($msg)): ?>
     <div class="alert-success"><i class="fa-solid fa-circle-check"></i> <?php echo htmlspecialchars($msg); ?></div>
@@ -13,11 +7,11 @@ $pageTitle = 'Quản lý sách';
 <div class="admin-table-wrap">
     <div class="admin-table-header">
         <h3><i class="fa-solid fa-book" style="color:#e74c3c;margin-right:6px;"></i> Danh sách sách</h3>
-        <a href="<?php echo BASE_URL; ?>/admin/addbook" class="btn-add">
+        <a href="index.php?controller=AdminBook&action=add" class="btn-add">
             <i class="fa-solid fa-plus"></i> Thêm sách mới
         </a>
     </div>
-    <!-- Thống kê nhanh -->
+
     <?php if (!empty($sachs)): ?>
     <div style="padding:12px 22px; border-top:1px solid #f0f0f0; font-size:13px; color:#888; display:flex; gap:20px;">
         <span><i class="fa-solid fa-layer-group" style="color:#e74c3c;"></i> Tổng: <b style="color:#1a1f2e;"><?php echo count($sachs); ?></b> sách</span>
@@ -47,7 +41,6 @@ $pageTitle = 'Quản lý sách';
                 <?php if (empty($sachs)): ?>
                     <tr>
                         <td colspan="10" style="text-align:center; padding:30px; color:#aaa;">
-                            <i class="fa-solid fa-book-open" style="font-size:28px; display:block; margin-bottom:8px;"></i>
                             Chưa có sách nào trong danh sách.
                         </td>
                     </tr>
@@ -80,17 +73,19 @@ $pageTitle = 'Quản lý sách';
                         <td style="font-size:13px; color:#888;"><?php echo htmlspecialchars($row['NamXB'] ?? '—'); ?></td>
                         <td style="text-align:center;">
                             <?php if (!empty($row['HinhAnh'])): ?>
-                                <img src="<?php echo BASE_URL; ?>/public/images/sach/<?php echo htmlspecialchars($row['HinhAnh']); ?>"
-                                     alt="Bìa sách" style="width:50px; height:65px; object-fit:cover; border-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,.15);">
+                                <img src="public/images/sach/<?php echo htmlspecialchars($row['HinhAnh']); ?>"
+                                     alt="Bìa sách"
+                                     style="width:50px; height:65px; object-fit:cover; border-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,.15);">
                             <?php else: ?>
                                 <span style="color:#ccc; font-size:12px;">Chưa có</span>
                             <?php endif; ?>
                         </td>
                         <td style="text-align:center; white-space:nowrap;">
-                            <a href="<?php echo BASE_URL; ?>/admin/editbook/<?php echo (int)$row['IDSach']; ?>" class="btn-edit">
+                            <a href="index.php?controller=AdminBook&action=edit&param=<?php echo (int)$row['IDSach']; ?>"
+                               class="btn-edit">
                                 <i class="fa-solid fa-pen-to-square"></i> Sửa
                             </a>
-                            <a href="<?php echo BASE_URL; ?>/admin/deletebook/<?php echo (int)$row['IDSach']; ?>"
+                            <a href="index.php?controller=AdminBook&action=delete&param=<?php echo (int)$row['IDSach']; ?>"
                                class="btn-delete"
                                onclick="return confirm('Xóa sách này? Hành động không thể hoàn tác!')">
                                 <i class="fa-solid fa-trash"></i> Xóa

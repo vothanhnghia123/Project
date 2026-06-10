@@ -1,18 +1,12 @@
-<?php
-// ============================================================
-//  View\Admin\Donhang\Index — Quản lý đơn hàng
-//  Biến: $donhangs (array) — mỗi row gồm cả thông tin nguoidung
-// ============================================================
-$pageTitle = 'Quản lý đơn hàng';
-?>
+<?php $pageTitle = 'Quản lý đơn hàng'; ?>
 
 <div class="admin-table-wrap">
     <div class="admin-table-header">
         <h3><i class="fa-solid fa-box" style="color:#e74c3c;margin-right:6px;"></i> Danh sách đơn hàng</h3>
         <div style="display:flex; align-items:center; gap:12px;">
             <span style="font-size:13px; color:#888;"><?php echo count($donhangs); ?> đơn</span>
-            <!-- Bộ lọc nhanh -->
-            <select id="filter-tt" onchange="filterTable()" style="padding:6px 10px; border:1px solid #ddd; border-radius:8px; font-size:13px; outline:none;">
+            <select id="filter-tt" onchange="filterTable()"
+                    style="padding:6px 10px; border:1px solid #ddd; border-radius:8px; font-size:13px; outline:none;">
                 <option value="">Tất cả trạng thái</option>
                 <option value="0">Chờ xác nhận</option>
                 <option value="1">Đã xác nhận</option>
@@ -41,7 +35,6 @@ $pageTitle = 'Quản lý đơn hàng';
                 <?php if (empty($donhangs)): ?>
                     <tr>
                         <td colspan="7" style="text-align:center; padding:30px; color:#aaa;">
-                            <i class="fa-solid fa-box-open" style="font-size:28px; display:block; margin-bottom:8px;"></i>
                             Chưa có đơn hàng nào.
                         </td>
                     </tr>
@@ -92,13 +85,15 @@ $pageTitle = 'Quản lý đơn hàng';
     </div>
 </div>
 
-<!-- ══════ POPUP CHI TIẾT ĐƠN HÀNG ══════ -->
+<!-- POPUP CHI TIET DON HANG -->
 <div id="admin-popup">
     <div class="popup-box">
         <button class="popup-close" onclick="closePopup()"><i class="fa-solid fa-xmark"></i></button>
-        <h3><i class="fa-solid fa-box" style="color:#e74c3c; margin-right:8px;"></i> Chi tiết đơn hàng <span id="pop-id" style="color:#e74c3c;"></span></h3>
+        <h3><i class="fa-solid fa-box" style="color:#e74c3c; margin-right:8px;"></i>
+            Chi tiết đơn hàng <span id="pop-id" style="color:#e74c3c;"></span>
+        </h3>
 
-        <!-- Thông tin người mua -->
+        <!-- Thong tin nguoi mua -->
         <div style="background:#f8f9fa; border-radius:10px; padding:16px; margin-bottom:16px;">
             <div style="font-weight:700; color:#1a1f2e; margin-bottom:10px; font-size:13px;">
                 <i class="fa-solid fa-user" style="color:#3498db;"></i> Thông tin người mua
@@ -117,7 +112,7 @@ $pageTitle = 'Quản lý đơn hàng';
             </div>
         </div>
 
-        <!-- Sản phẩm trong đơn -->
+        <!-- San pham trong don -->
         <div style="margin-bottom:16px;">
             <div style="font-weight:700; color:#1a1f2e; margin-bottom:10px; font-size:13px;">
                 <i class="fa-solid fa-list" style="color:#27ae60;"></i> Sản phẩm trong đơn
@@ -127,7 +122,7 @@ $pageTitle = 'Quản lý đơn hàng';
             </div>
         </div>
 
-        <!-- Cập nhật trạng thái -->
+        <!-- Cap nhat trang thai -->
         <div style="border-top:1px solid #f0f0f0; padding-top:16px;">
             <label style="font-weight:700; font-size:13px; display:block; margin-bottom:8px;">
                 <i class="fa-solid fa-truck" style="color:#f39c12;"></i> Cập nhật trạng thái
@@ -155,28 +150,31 @@ $pageTitle = 'Quản lý đơn hàng';
 
 <script>
 function openPopup(id, tt, ten, email, sdt, diachi, ngay, tien) {
-    document.getElementById('pop-id').textContent  = '#' + id;
-    document.getElementById('pop-ten').textContent  = ten;
+    document.getElementById('pop-id').textContent    = '#' + id;
+    document.getElementById('pop-ten').textContent   = ten;
     document.getElementById('pop-email').textContent = email;
-    document.getElementById('pop-sdt').textContent  = sdt;
+    document.getElementById('pop-sdt').textContent   = sdt;
     document.getElementById('pop-diachi').textContent = diachi;
-    document.getElementById('pop-ngay').textContent = ngay;
+    document.getElementById('pop-ngay').textContent  = ngay;
     document.getElementById('pop-tien').textContent  = tien + 'đ';
     document.getElementById('pop-don-id').value      = id;
     document.getElementById('pop-tt').value          = tt;
     document.getElementById('pop-msg').style.display = 'none';
 
-    // Load sản phẩm qua AJAX
-    document.getElementById('pop-sanpham').innerHTML = '<span style="color:#aaa;"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải...</span>';
+    document.getElementById('pop-sanpham').innerHTML =
+        '<span style="color:#aaa;"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải...</span>';
+
     $.ajax({
-        url: '<?php echo BASE_URL; ?>/admin/loadchitiet',
+        url: 'index.php?controller=AdminDonhang&action=loadchitiet',
         method: 'POST',
         data: { id: id },
         success: function(data) {
-            document.getElementById('pop-sanpham').innerHTML = data || '<em style="color:#aaa;">Không có sản phẩm</em>';
+            document.getElementById('pop-sanpham').innerHTML =
+                data || '<em style="color:#aaa;">Không có sản phẩm</em>';
         },
         error: function() {
-            document.getElementById('pop-sanpham').innerHTML = '<em style="color:#e74c3c;">Không thể tải dữ liệu</em>';
+            document.getElementById('pop-sanpham').innerHTML =
+                '<em style="color:#e74c3c;">Không thể tải dữ liệu</em>';
         }
     });
 
@@ -192,12 +190,11 @@ function saveStatus() {
     const tt = document.getElementById('pop-tt').value;
 
     $.ajax({
-        url: '<?php echo BASE_URL; ?>/admin/updatedonhang',
+        url: 'index.php?controller=AdminDonhang&action=updatetrangthai',
         method: 'POST',
         data: { id: id, trangthai: tt },
         success: function(res) {
             if (res.trim() === 'ok') {
-                // Cập nhật badge trong bảng
                 const badgeMap = {
                     0: '<span class="badge-status badge-wait">Chờ xác nhận</span>',
                     1: '<span class="badge-status badge-confirm">Đã xác nhận</span>',
@@ -208,29 +205,21 @@ function saveStatus() {
                 };
                 const cell = document.getElementById('status-' + id);
                 if (cell) cell.innerHTML = badgeMap[tt] || '';
-                // Cập nhật data-tt cho filter
                 const row = cell ? cell.closest('tr') : null;
                 if (row) row.dataset.tt = tt;
-
                 document.getElementById('pop-msg').style.display = 'block';
             }
         }
     });
 }
 
-// Filter theo trạng thái
 function filterTable() {
     const val = document.getElementById('filter-tt').value;
     document.querySelectorAll('#don-table tbody tr').forEach(tr => {
-        if (!val || tr.dataset.tt === val) {
-            tr.style.display = '';
-        } else {
-            tr.style.display = 'none';
-        }
+        tr.style.display = (!val || tr.dataset.tt === val) ? '' : 'none';
     });
 }
 
-// Đóng popup khi click bên ngoài
 document.getElementById('admin-popup').addEventListener('click', function(e) {
     if (e.target === this) closePopup();
 });

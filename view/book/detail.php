@@ -1,44 +1,28 @@
-<?php
-// ============================================================
-//  View\Book\Detail — Chi tiết sách + đánh giá
-//  Biến từ controller/Book.php::detail():
-//    $book    — thông tin sách (JOIN tác giả, thể loại, NXB)
-//    $rating  — thống kê sao (tong, trungbinh, sao1..sao5)
-//    $reviews — danh sách đánh giá mới nhất
-//    $pt      — phần trăm từng mức sao [1..5]
-//    $tong    — tổng số đánh giá
-// ============================================================
-?>
-
-<!-- Thông báo thêm giỏ thành công -->
-<div id="msg-add" style="
-  display:none; position:fixed; top:100px; right:30px;
-  background:#28a745; color:#fff; padding:14px 24px;
-  border-radius:8px; z-index:9999; font-weight:600;
-  box-shadow:0 4px 12px rgba(0,0,0,.15);">
-  <i class="fa fa-check"></i> Đã thêm vào giỏ hàng!
+<!-- Thong bao them gio thanh cong -->
+<div id="msg-add">
+  <i class="fa fa-check"></i> Đã thêm sản phẩm vào giỏ hàng!
 </div>
 
-<!-- ══════════════ THÔNG TIN SÁCH ══════════════ -->
+<!-- THONG TIN SACH -->
 <div class="container single-product" style="margin-top:50px; margin-bottom:50px;">
   <div class="row">
 
-    <!-- Hình ảnh -->
+    <!-- Hinh anh -->
     <div class="col-md-5">
       <img class="product-img img-fluid"
-           src="<?= BASE_URL ?>/public/images/sach/<?= htmlspecialchars($book['HinhAnh']) ?>"
-           alt="<?= htmlspecialchars($book['TenSach']) ?>"
+           src="public/images/sach/<?= htmlspecialchars($book['HinhAnh'] ?? '') ?>"
+           alt="<?= htmlspecialchars($book['TenSach'] ?? '') ?>"
            style="width:100%; border:1px solid #eee; border-radius:8px;">
     </div>
 
-    <!-- Thông tin -->
+    <!-- Thong tin -->
     <div class="col-md-7 product-description">
       <h2 style="font-weight:bold; color:#333;">
-        <?= htmlspecialchars($book['TenSach']) ?>
+        <?= htmlspecialchars($book['TenSach'] ?? '') ?>
       </h2>
 
       <h3 style="color:#d9534f; margin:20px 0;">
-        Giá: <?= number_format($book['GiaBan'], 0, ',', '.') ?> đ
+        Giá: <?= number_format((float)($book['GiaBan'] ?? 0), 0, ',', '.') ?> đ
       </h3>
 
       <ul class="list-unstyled info-book" style="line-height:2.2; font-size:16px;">
@@ -48,7 +32,13 @@
         </li>
         <li>
           <i class="fa-solid fa-tags" style="width:25px;"></i>
-          <b>Thể loại:</b> <?= htmlspecialchars($book['TenTheLoai'] ?? '—') ?>
+          <b>Thể loại:</b>
+          <?php if (!empty($book['TenTheLoai'])): ?>
+            <a href="index.php?controller=Book&action=theloai&param=<?= (int)($book['IDTheLoai'] ?? 0) ?>"
+               style="color:#e53935; text-decoration:none;">
+              <?= htmlspecialchars($book['TenTheLoai']) ?>
+            </a>
+          <?php else: ?>—<?php endif; ?>
         </li>
         <li>
           <i class="fa-solid fa-building-columns" style="width:25px;"></i>
@@ -56,7 +46,7 @@
         </li>
         <li>
           <i class="fa-solid fa-file-lines" style="width:25px;"></i>
-          <b>Số trang:</b> <?= (int)$book['SoTrang'] ?> trang
+          <b>Số trang:</b> <?= (int)($book['SoTrang'] ?? 0) ?> trang
         </li>
         <li>
           <i class="fa-solid fa-calendar-days" style="width:25px;"></i>
@@ -65,7 +55,7 @@
         <li>
           <i class="fa-solid fa-boxes-stacked" style="width:25px;"></i>
           <b>Tình trạng:</b>
-          <?php if ((int)$book['SoLuong'] > 0): ?>
+          <?php if ((int)($book['SoLuong'] ?? 0) > 0): ?>
             <span class="text-success">Còn hàng (<?= (int)$book['SoLuong'] ?>)</span>
           <?php else: ?>
             <span class="text-danger">Hết hàng</span>
@@ -73,7 +63,7 @@
         </li>
       </ul>
 
-      <!-- Mô tả -->
+      <!-- Mo ta -->
       <div style="margin-top:24px;">
         <h5 style="border-bottom:2px solid #eee; padding-bottom:8px; font-weight:bold; color:#555;">
           MÔ TẢ SÁCH
@@ -83,20 +73,27 @@
         </p>
       </div>
 
-      <!-- Nút thêm giỏ -->
+      <!-- Nut them gio -->
       <div style="margin-top:28px;">
+        <?php if ((int)($book['SoLuong'] ?? 0) > 0): ?>
         <button class="btn btn-danger btn-lg shadow-sm add-cart"
                 data-id="<?= (int)$book['IDSach'] ?>"
                 style="padding:10px 30px; font-weight:bold;">
           <i class="fa-solid fa-cart-shopping"></i> THÊM VÀO GIỎ HÀNG
         </button>
+        <?php else: ?>
+        <button class="btn btn-secondary btn-lg shadow-sm" disabled
+                style="padding:10px 30px; font-weight:bold;">
+          <i class="fa-solid fa-ban"></i> HẾT HÀNG
+        </button>
+        <?php endif; ?>
       </div>
     </div>
 
   </div>
 </div>
 
-<!-- ══════════════ ĐÁNH GIÁ ══════════════ -->
+<!-- DANH GIA -->
 <div class="container single-product" style="margin-bottom:60px;">
   <div class="row">
     <div class="col-12">
@@ -108,20 +105,19 @@
           <div style="padding:20px; border:1px solid #ddd; border-radius:8px;">
             <p>
               Chỉ có thành viên mới có thể viết nhận xét. Vui lòng
-              <a href="<?= BASE_URL ?>/home/login">đăng nhập</a>
+              <a href="index.php?controller=User&action=login">đăng nhập</a>
               hoặc
-              <a href="<?= BASE_URL ?>/home/register">đăng ký</a>.
+              <a href="index.php?controller=User&action=register">đăng ký</a>.
             </p>
           </div>
         <?php else: ?>
 
-          <!-- Tổng hợp sao -->
-          <div class="rating-summary"
-               style="display:flex; gap:30px; flex-wrap:wrap; align-items:center;">
+          <!-- Tong hop sao -->
+          <div class="rating-summary">
 
             <div class="rating-left" style="text-align:center; min-width:100px;">
               <h1 style="font-size:48px; margin:0; color:#f5a623;">
-                <?= $rating['trungbinh'] ?? '0' ?>/5
+                <?= number_format((float)($rating['trungbinh'] ?? 0), 1) ?>/5
               </h1>
               <div style="color:#f5a623; font-size:20px;">
                 <?php for ($i = 1; $i <= 5; $i++): ?>
@@ -130,7 +126,7 @@
                       : '<i class="fa-regular fa-star"></i>' ?>
                 <?php endfor; ?>
               </div>
-              <p style="color:#888; margin-top:4px;">(<?= $tong ?> đánh giá)</p>
+              <p style="color:#888; margin-top:4px;">(<?= (int)($tong ?? 0) ?> đánh giá)</p>
             </div>
 
             <div class="rating-right" style="flex:1; min-width:200px;">
@@ -138,27 +134,27 @@
               <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
                 <span style="min-width:38px; font-size:13px;"><?= $s ?> sao</span>
                 <div style="flex:1; height:10px; background:#eee; border-radius:5px; overflow:hidden;">
-                  <div style="width:<?= $pt[$s] ?>%; height:100%; background:#f5a623;"></div>
+                  <div style="width:<?= (int)($pt[$s] ?? 0) ?>%; height:100%; background:#f5a623;"></div>
                 </div>
                 <span style="min-width:36px; font-size:13px; text-align:right;">
-                  <?= $pt[$s] ?>%
+                  <?= (int)($pt[$s] ?? 0) ?>%
                 </span>
               </div>
               <?php endforeach; ?>
             </div>
 
             <div>
-              <button id="btn-review" class="btn btn-outline-danger">
+              <button id="btn-review" class="btn-review">
                 <i class="fa fa-pen"></i> Viết đánh giá
               </button>
             </div>
 
           </div><!-- /.rating-summary -->
 
-          <!-- Form gửi đánh giá (ẩn mặc định) -->
+          <!-- Form gui danh gia (an mac dinh) -->
           <div id="review-form"
                style="display:none; margin-top:20px; border:1px solid #ddd; padding:20px; border-radius:8px;">
-            <form action="<?= BASE_URL ?>/book/review" method="POST">
+            <form action="index.php?controller=Book&action=review" method="POST">
               <input type="hidden" name="idsach" value="<?= (int)$book['IDSach'] ?>">
 
               <div style="margin-bottom:12px;">
@@ -184,26 +180,26 @@
         <?php endif; ?>
       </div><!-- /.write-review-box -->
 
-      <!-- Danh sách đánh giá -->
+      <!-- Danh sach danh gia -->
       <div style="margin-top:40px;">
         <h4 style="font-weight:bold;">Nhận xét mới nhất</h4>
 
         <?php if (!empty($reviews)): ?>
           <?php foreach ($reviews as $dg): ?>
-          <div style="border-bottom:1px solid #eee; padding:15px 0;">
+          <div class="review-item" style="border-bottom:1px solid #eee; padding:15px 0;">
             <b><?= htmlspecialchars($dg['HoTen'] ?? 'Ẩn danh') ?></b>
             <div style="color:#f5a623; margin:4px 0;">
               <?php for ($i = 1; $i <= 5; $i++): ?>
-                <?= $i <= (int)$dg['SoSao']
+                <?= $i <= (int)($dg['SoSao'] ?? 0)
                     ? '<i class="fa fa-star"></i>'
                     : '<i class="fa-regular fa-star"></i>' ?>
               <?php endfor; ?>
             </div>
             <p style="margin-top:6px; color:#444;">
-              <?= nl2br(htmlspecialchars($dg['NoiDung'])) ?>
+              <?= nl2br(htmlspecialchars($dg['NoiDung'] ?? '')) ?>
             </p>
             <small style="color:#aaa;">
-              <?= date('d/m/Y', strtotime($dg['NgayDanhGia'])) ?>
+              <?= !empty($dg['NgayDanhGia']) ? date('d/m/Y', strtotime($dg['NgayDanhGia'])) : '' ?>
             </small>
           </div>
           <?php endforeach; ?>
@@ -217,29 +213,26 @@
 </div>
 
 <script>
-// Toggle form đánh giá
 document.getElementById('btn-review')?.addEventListener('click', function () {
     const form = document.getElementById('review-form');
     form.style.display = form.style.display === 'none' ? 'block' : 'none';
 });
 
-// AJAX thêm vào giỏ hàng
-// URL: GET /book/addcart?id={IDSach}&so_luong=1
-// → controller Book::addcart() nhận $_GET['id'] và $_GET['so_luong']
+// AJAX them vao gio
 document.querySelector('.add-cart')?.addEventListener('click', function () {
     const id = this.dataset.id;
-    fetch('<?= BASE_URL ?>/book/addcart?id=' + id + '&so_luong=1')
+    fetch('index.php?controller=Book&action=addcart&id=' + id + '&so_luong=1')
         .then(res => res.text())
         .then(total => {
-            const msg = document.getElementById('msg-add');
-            if (msg) {
-                msg.style.display = 'block';
-                setTimeout(() => msg.style.display = 'none', 2500);
-            }
+            console.log('Tong gio hang:', total);
+
             const badge = document.getElementById('cart-count');
+
+            console.log('Badge:', badge);
+
             if (badge) {
                 badge.innerText = total;
-                badge.style.display = parseInt(total) > 0 ? 'inline-block' : 'none';
+                badge.style.display = 'inline-block';
             }
         })
         .catch(err => console.error('Lỗi thêm giỏ hàng:', err));

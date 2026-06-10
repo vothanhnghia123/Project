@@ -1,10 +1,4 @@
-<?php
-// ============================================================
-//  View\Admin\NXB\Index — Quản lý nhà xuất bản
-//  Biến: $nxbs (array), $editItem (array|null), $msg
-// ============================================================
-$pageTitle = 'Quản lý nhà xuất bản';
-?>
+<?php $pageTitle = 'Quản lý nhà xuất bản'; ?>
 
 <?php if (!empty($msg)): ?>
     <div class="alert-success"><i class="fa-solid fa-circle-check"></i> <?php echo htmlspecialchars($msg); ?></div>
@@ -12,7 +6,7 @@ $pageTitle = 'Quản lý nhà xuất bản';
 
 <div style="display:grid; grid-template-columns:1fr 420px; gap:24px; align-items:start;">
 
-    <!-- ════ BẢNG DANH SÁCH ════ -->
+    <!-- BANG DANH SACH -->
     <div class="admin-table-wrap">
         <div class="admin-table-header">
             <h3><i class="fa-solid fa-building-columns" style="color:#e74c3c;margin-right:6px;"></i> Danh sách nhà xuất bản</h3>
@@ -33,7 +27,6 @@ $pageTitle = 'Quản lý nhà xuất bản';
                 <?php if (empty($nxbs)): ?>
                     <tr>
                         <td colspan="5" style="text-align:center; padding:30px; color:#aaa;">
-                            <i class="fa-solid fa-building-columns" style="font-size:28px; display:block; margin-bottom:8px;"></i>
                             Chưa có nhà xuất bản nào.
                         </td>
                     </tr>
@@ -56,9 +49,9 @@ $pageTitle = 'Quản lý nhà xuất bản';
                             <?php echo !empty($nxb['DienThoai']) ? htmlspecialchars($nxb['DienThoai']) : '<em style="color:#ccc;">—</em>'; ?>
                         </td>
                         <td style="text-align:center; white-space:nowrap;">
-                            <a href="<?php echo BASE_URL; ?>/admin/nxb?edit=<?php echo (int)$nxb['IDNXB']; ?>"
+                            <a href="index.php?controller=AdminNxb&action=index&edit=<?php echo (int)$nxb['IDNXB']; ?>"
                                class="btn-edit"><i class="fa-solid fa-pen-to-square"></i> Sửa</a>
-                            <a href="<?php echo BASE_URL; ?>/admin/deletenxb/<?php echo (int)$nxb['IDNXB']; ?>"
+                            <a href="index.php?controller=AdminNxb&action=delete&param=<?php echo (int)$nxb['IDNXB']; ?>"
                                class="btn-delete"
                                onclick="return confirm('Xóa nhà xuất bản này?')">
                                 <i class="fa-solid fa-trash"></i> Xóa
@@ -71,12 +64,13 @@ $pageTitle = 'Quản lý nhà xuất bản';
         </table>
     </div>
 
-    <!-- ════ FORM THÊM / SỬA ════ -->
+    <!-- FORM THEM / SUA -->
     <div class="admin-form-wrap" style="margin-bottom:0;">
 
         <?php if ($editItem): ?>
             <h3><i class="fa-solid fa-pen-to-square" style="color:#3498db; margin-right:8px;"></i> Sửa nhà xuất bản</h3>
-            <form method="POST" action="<?php echo BASE_URL; ?>/admin/updatenxb/<?php echo (int)$editItem['IDNXB']; ?>">
+            <form method="POST" action="index.php?controller=AdminNxb&action=update">
+                <input type="hidden" name="id" value="<?php echo (int)$editItem['IDNXB']; ?>">
                 <div class="form-row">
                     <label>Tên NXB <span style="color:#e74c3c;">*</span></label>
                     <input type="text" name="tennxb" required
@@ -98,7 +92,7 @@ $pageTitle = 'Quản lý nhà xuất bản';
                     <button type="submit" class="btn-submit" style="padding:9px 22px;">
                         <i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi
                     </button>
-                    <a href="<?php echo BASE_URL; ?>/admin/nxb" class="btn-cancel">
+                    <a href="index.php?controller=AdminNxb&action=index" class="btn-cancel">
                         <i class="fa-solid fa-xmark"></i> Hủy
                     </a>
                 </div>
@@ -107,7 +101,7 @@ $pageTitle = 'Quản lý nhà xuất bản';
         <?php endif; ?>
 
         <h3><i class="fa-solid fa-plus-circle" style="color:#e74c3c; margin-right:8px;"></i> Thêm nhà xuất bản</h3>
-        <form method="POST" action="<?php echo BASE_URL; ?>/admin/storenxb">
+        <form method="POST" action="index.php?controller=AdminNxb&action=store">
             <div class="form-row">
                 <label>Tên NXB <span style="color:#e74c3c;">*</span></label>
                 <input type="text" name="tennxb" required placeholder="VD: NXB Kim Đồng...">

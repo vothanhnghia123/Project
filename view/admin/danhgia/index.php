@@ -1,10 +1,4 @@
-<?php
-// ============================================================
-//  View\Admin\Danhgia\Index — Quản lý đánh giá
-//  Biến: $danhgias (array), $msg (string)
-// ============================================================
-$pageTitle = 'Quản lý đánh giá';
-?>
+<?php $pageTitle = 'Quản lý đánh giá'; ?>
 
 <?php if (!empty($msg)): ?>
     <div class="alert-success"><i class="fa-solid fa-circle-check"></i> <?php echo htmlspecialchars($msg); ?></div>
@@ -15,7 +9,6 @@ $pageTitle = 'Quản lý đánh giá';
         <h3><i class="fa-solid fa-star" style="color:#e74c3c;margin-right:6px;"></i> Danh sách đánh giá</h3>
         <div style="display:flex; align-items:center; gap:12px;">
             <span style="font-size:13px; color:#888;"><?php echo count($danhgias); ?> đánh giá</span>
-            <!-- Bộ lọc sao -->
             <select id="filter-sao" onchange="filterSao()"
                     style="padding:6px 10px; border:1px solid #ddd; border-radius:8px; font-size:13px; outline:none;">
                 <option value="">Tất cả số sao</option>
@@ -45,7 +38,6 @@ $pageTitle = 'Quản lý đánh giá';
                 <?php if (empty($danhgias)): ?>
                     <tr>
                         <td colspan="7" style="text-align:center; padding:30px; color:#aaa;">
-                            <i class="fa-solid fa-star" style="font-size:28px; display:block; margin-bottom:8px;"></i>
                             Chưa có đánh giá nào.
                         </td>
                     </tr>
@@ -80,7 +72,9 @@ $pageTitle = 'Quản lý đánh giá';
                         <td style="font-size:13px; color:#555; max-width:260px;">
                             <?php
                             $nd = htmlspecialchars($dg['NoiDung'] ?? '');
-                            echo strlen($nd) > 100 ? mb_substr($nd, 0, 100) . '...' : ($nd ?: '<em style="color:#ccc;">Không có nội dung</em>');
+                            echo strlen($nd) > 100
+                                ? mb_substr($nd, 0, 100) . '...'
+                                : ($nd ?: '<em style="color:#ccc;">Không có nội dung</em>');
                             ?>
                         </td>
                         <td style="font-size:12px; color:#888; white-space:nowrap;">
@@ -90,7 +84,7 @@ $pageTitle = 'Quản lý đánh giá';
                             ?>
                         </td>
                         <td style="text-align:center;">
-                            <a href="<?php echo BASE_URL; ?>/admin/deletedanhgia/<?php echo (int)$dg['IDDanhGia']; ?>"
+                            <a href="index.php?controller=AdminDanhgia&action=delete&param=<?php echo (int)$dg['IDDanhGia']; ?>"
                                class="btn-delete"
                                onclick="return confirm('Xóa đánh giá này?')"
                                style="background:#fee2e2; padding:5px 10px; border-radius:6px; font-size:12px; margin:0;">
@@ -104,7 +98,6 @@ $pageTitle = 'Quản lý đánh giá';
         </table>
     </div>
 
-    <!-- Thống kê nhanh -->
     <?php if (!empty($danhgias)): ?>
     <div style="padding:12px 22px; border-top:1px solid #f0f0f0; display:flex; gap:20px; flex-wrap:wrap;">
         <?php
