@@ -32,7 +32,7 @@
       <h2 style="margin:0; font-size:22px; font-weight:700;">GIỎ HÀNG CỦA BẠN</h2>
       <a href="index.php?controller=Book&action=clearcart"
          class="btn-delete-all"
-         style="color:#e74c3c; font-size:14px; text-decoration:none;"
+         style="color:#fff; font-size:14px; text-decoration:none;"
          onclick="return confirm('Xóa toàn bộ giỏ hàng?')">
         Xóa tất cả
       </a>
@@ -75,16 +75,16 @@
         <!-- Nut tang / giam -->
         <div class="cart-qty" style="display:flex; align-items:center; gap:6px;">
           <a href="index.php?controller=Book&action=qty&vi=<?= $item['vitri'] ?>&do=giam"
-             class="btn-qty"
-             style="display:inline-block; width:28px; height:28px; line-height:26px; text-align:center; border:1px solid #ccc; border-radius:4px; text-decoration:none; color:#333; font-weight:700;">
-            −
+            class="btn-qty"
+            style="display:flex; align-items:center; justify-content:center; width:28px; height:28px; border:1px solid #ccc; border-radius:4px; text-decoration:none; color:#fff; font-weight:700;">
+            -
           </a>
           <span class="qty" style="min-width:24px; text-align:center; font-weight:600;">
             <?= $item['SoLuong'] ?>
           </span>
           <a href="index.php?controller=Book&action=qty&vi=<?= $item['vitri'] ?>&do=tang"
-             class="btn-qty"
-             style="display:inline-block; width:28px; height:28px; line-height:26px; text-align:center; border:1px solid #ccc; border-radius:4px; text-decoration:none; color:#333; font-weight:700;">
+            class="btn-qty"
+            style="display:flex; align-items:center; justify-content:center; width:28px; height:28px; border:1px solid #ccc; border-radius:4px; text-decoration:none; color:#fff; font-weight:700;">
             +
           </a>
         </div>
@@ -97,7 +97,7 @@
         <!-- Nut xoa -->
         <a href="index.php?controller=Book&action=removecart&vi=<?= $item['vitri'] ?>"
            class="btn-delete"
-           style="color:#e74c3c; text-decoration:none; font-size:13px; white-space:nowrap;"
+           style="color:#fff; text-decoration:none; font-size:13px; white-space:nowrap;"
            onclick="return confirm('Xóa sản phẩm này?')">
           Xóa
         </a>
