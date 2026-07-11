@@ -1,1 +1,58 @@
+# ============================================================
+#  .htaccess - BookStore Project
+#  Ghi chu: Project dang dung co che URL kieu
+#  index.php?controller=...&action=...&param=...
+#  => KHONG rewrite sang pretty URL de tranh vo duong dan
+#     tuong doi cua CSS/hinh anh (public/css/..., public/images/...)
+# ============================================================
+
+# --- Khong cho liet ke danh sach file trong thu muc ---
 Options -Indexes
+
+# --- Khong cho truy cap truc tiep vao file .htaccess ---
+<Files ".htaccess">
+    Require all denied
+</Files>
+
+# --- Chan truy cap truc tiep qua trinh duyet vao cac thu muc
+#     chi danh cho PHP include noi bo (khong can HTTP request) ---
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^config/ - [F,L]
+    RewriteRule ^controller/ - [F,L]
+    RewriteRule ^model/ - [F,L]
+
+    # --- URL dep: neu duong dan khong khop file/thu muc that
+    #     (vd: /book/danhmuc/5) thi chuyen ve index.php de PHP tu parse ---
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# --- Chan truy cap cac file he thong / file an (.git, .env, composer.json,...) ---
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "(composer\.(json|lock)|\.env|\.gitignore|readme\.md)$">
+    Require all denied
+</FilesMatch>
+
+# --- Bat buoc bang ma UTF-8 cho toan bo site (du lieu tieng Viet) ---
+AddDefaultCharset UTF-8
+
+# --- Cache tai nguyen tinh (css/js/hinh anh) de tang toc do tai trang ---
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+</IfModule>
+
+# --- Nen (gzip) noi dung tra ve de giam dung luong ---
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/javascript application/json
+</IfModule>
