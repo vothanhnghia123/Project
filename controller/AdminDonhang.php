@@ -40,11 +40,25 @@ class AdminDonhang {
         $items = $id > 0 ? $this->model->getChitietDonhang($id) : [];
 
         foreach ($items as $row) {
-            echo '<p>'
-               . htmlspecialchars($row['TenSach'])
-               . ' — SL: ' . (int)$row['SoLuong']
-               . ' — Giá: ' . number_format((float)$row['DonGia'], 0, ',', '.') . ' VNĐ'
-               . '</p>';
-        }
+
+    echo '
+            <div class="order-product">
+
+                <div class="order-product-info">
+                    <div class="order-product-name">'
+                        . htmlspecialchars($row['TenSach']) .
+                    '</div>
+
+                    <div class="order-product-meta">
+                        Số lượng: ' . (int)$row['SoLuong'] . '
+                    </div>
+                </div>
+
+                <div class="order-product-price">
+                    ' . number_format((float)$row['DonGia'], 0, ",", ".") . 'đ
+                </div>
+
+            </div>';
+}
     }
 }

@@ -117,7 +117,7 @@
             <div style="font-weight:700; color:#1a1f2e; margin-bottom:10px; font-size:13px;">
                 <i class="fa-solid fa-list" style="color:#27ae60;"></i> Sản phẩm trong đơn
             </div>
-            <div id="pop-sanpham" style="font-size:13px; min-height:40px;">
+            <div id="pop-sanpham">
                 <span style="color:#aaa;"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải...</span>
             </div>
         </div>
